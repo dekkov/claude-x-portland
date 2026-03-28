@@ -84,50 +84,10 @@ export function useMapbox(containerRef: React.RefObject<HTMLDivElement | null>) 
         // Fallback: standard style without config properties
       }
 
-      // Cherry blossom trees — try style modification once
+      // Cherry blossom trees — best-effort, don't block loading
       if (!cherryApplied.current) {
         cherryApplied.current = true
-        const styleReloaded = applyCherryBlossomTrees(map)
-        if (styleReloaded) return // setStyle re-triggers style.load; finish there
-      }
-
-      // Pink cherry-blossom ground along Naito Pkwy / Waterfront Park
-      if (!map.getSource("cherry-ground")) {
-        map.addSource("cherry-ground", {
-          type: "geojson",
-          data: {
-            type: "Feature",
-            properties: {},
-            geometry: {
-              type: "Polygon",
-              coordinates: [[
-                [-122.6747, 45.5295],
-                [-122.6710, 45.5295],
-                [-122.6700, 45.5240],
-                [-122.6695, 45.5180],
-                [-122.6700, 45.5120],
-                [-122.6705, 45.5060],
-                [-122.6720, 45.5020],
-                [-122.6745, 45.5020],
-                [-122.6735, 45.5060],
-                [-122.6730, 45.5120],
-                [-122.6725, 45.5180],
-                [-122.6725, 45.5240],
-                [-122.6747, 45.5295],
-              ]],
-            },
-          },
-        })
-        map.addLayer({
-          id: "cherry-ground-fill",
-          type: "fill",
-          slot: "bottom",
-          source: "cherry-ground",
-          paint: {
-            "fill-color": "hsl(340, 80%, 85%)",
-            "fill-opacity": 0.6,
-          },
-        })
+        applyCherryBlossomTrees(map)
       }
 
       // Cinematic opening: zoom in after load
