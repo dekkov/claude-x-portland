@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import type mapboxgl from "mapbox-gl"
+import type { Map as MapboxMap } from "mapbox-gl"
 import { useAppState } from "../../context/AppContext"
 import { SANE_EVENTS } from "../../data/events"
 import { STUPID_EVENTS } from "../../data/stupid-events"
@@ -26,7 +26,7 @@ function getActiveNeighborhoodList(
   return result
 }
 
-export function NeighborhoodFilter({ map }: { map: mapboxgl.Map }) {
+export function NeighborhoodFilter({ map }: { map: MapboxMap }) {
   const { mode, activeCategories, selectedNeighborhood, setSelectedNeighborhood } = useAppState()
 
   const neighborhoods = useMemo(

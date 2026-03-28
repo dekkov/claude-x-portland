@@ -5,7 +5,7 @@ import { FALLBACK_MONOLOGUES } from "../config/constants"
 
 export function useMonologue() {
   const { mode, activeCategories } = useAppState()
-  const [text, setText] = useState(FALLBACK_MONOLOGUES.unhinged)
+  const [text, setText] = useState<string>(FALLBACK_MONOLOGUES.unhinged)
   const [isLoading, setIsLoading] = useState(true)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>()
 

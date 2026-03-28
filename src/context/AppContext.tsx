@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from "react"
-import type { AppMode, AnyCategory } from "../data/types"
+import type { AppMode } from "../data/types"
 import { SANE_CATEGORIES, STUPID_CATEGORIES } from "../config/constants"
 
 interface AppState {
@@ -13,11 +13,6 @@ interface AppState {
 }
 
 const AppContext = createContext<AppState | null>(null)
-
-function getAllCategoryIds(mode: AppMode): Set<string> {
-  const cats = mode === "sane" ? SANE_CATEGORIES : STUPID_CATEGORIES
-  return new Set(cats.map((c) => c.id))
-}
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<AppMode>("unhinged")
