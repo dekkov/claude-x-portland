@@ -26,6 +26,16 @@ export const CATEGORY_MAP: Record<string, CategoryDef> = Object.fromEntries(
   [...SANE_CATEGORIES, ...STUPID_CATEGORIES].map((c) => [c.id, c])
 )
 
+export const BATTLE_CONFIG = {
+  BATTLE_INTERVAL_MIN_MS: 30_000,
+  BATTLE_INTERVAL_MAX_MS: 60_000,
+  MARCH_DURATION_MS: 16_000,
+  EXPLOSION_DURATION_MS: 2_000,
+  RESULT_DISPLAY_MS: 5_000,
+  TROOPS_PER_ARMY: 4,
+  TROOP_STAGGER_DISTANCE: 0.15, // km between troops in column
+} as const
+
 export const FALLBACK_MONOLOGUES = {
   sane: "I'm having a moment. Half of me is protesting downtown while the other half is sipping artisanal coffee and applauding Ira Glass. This is fine. This is Portland.",
   unhinged: "I can't stop thinking about how Downtown is 94% concrete and somehow that's my most 'developed' personality trait. Meanwhile 8,000 crows hold nightly meetings in East Portland and honestly? Their governance structure is more functional than my city council.",

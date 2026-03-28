@@ -1,6 +1,7 @@
 import type { CityEvent } from "./types"
 
 export const SANE_EVENTS: readonly CityEvent[] = [
+  // === POLITICAL ===
   {
     id: "evt-1",
     title: '"No Kings" Rally',
@@ -12,6 +13,38 @@ export const SANE_EVENTS: readonly CityEvent[] = [
     location: [-122.6784, 45.5187],
   },
   {
+    id: "evt-7",
+    title: "Rent Is Too Damn High March",
+    venue: "Burnside Bridge",
+    time: "10:00 AM",
+    category: "political",
+    neighborhoodId: "buckman",
+    description: "A march so regular it has its own Yelp page. 4.2 stars.",
+    location: [-122.6600, 45.5230],
+  },
+  {
+    id: "evt-8",
+    title: "Climate Action Town Hall",
+    venue: "Revolution Hall",
+    time: "6:00 PM",
+    category: "political",
+    neighborhoodId: "buckman",
+    description: "Discussing how to save the planet while keeping our food carts running.",
+    location: [-122.6540, 45.5145],
+  },
+  {
+    id: "evt-9",
+    title: "Ranked Choice Voting Workshop",
+    venue: "Kenton Library",
+    time: "3:00 PM",
+    category: "political",
+    neighborhoodId: "kenton",
+    description: "Learning to rank candidates like we rank our favorite breweries.",
+    location: [-122.6930, 45.5830],
+  },
+
+  // === NATURE ===
+  {
     id: "evt-2",
     title: "Forest Bathing Walk",
     venue: "Oxbow Regional Park",
@@ -22,6 +55,38 @@ export const SANE_EVENTS: readonly CityEvent[] = [
     location: [-122.5060, 45.4920],
   },
   {
+    id: "evt-10",
+    title: "Mt. Tabor Sunrise Yoga",
+    venue: "Mt. Tabor Summit",
+    time: "6:30 AM",
+    category: "nature",
+    neighborhoodId: "mt-tabor",
+    description: "Sun salutations on a dormant volcano. Peak Portland energy.",
+    location: [-122.5940, 45.5090],
+  },
+  {
+    id: "evt-11",
+    title: "Oaks Bottom Bird Walk",
+    venue: "Oaks Bottom Wildlife Refuge",
+    time: "7:00 AM",
+    category: "nature",
+    neighborhoodId: "sellwood-moreland",
+    description: "Spot great blue herons and question your life choices at dawn.",
+    location: [-122.6570, 45.4750],
+  },
+  {
+    id: "evt-12",
+    title: "Community Garden Planting Day",
+    venue: "Cully Community Garden",
+    time: "10:00 AM",
+    category: "nature",
+    neighborhoodId: "cully",
+    description: "Growing kale so local it hasn't even left the dirt yet.",
+    location: [-122.5770, 45.5590],
+  },
+
+  // === CULTURE ===
+  {
     id: "evt-3",
     title: "Open Hours at Black Cultural Library",
     venue: "Black Cultural Library",
@@ -31,6 +96,38 @@ export const SANE_EVENTS: readonly CityEvent[] = [
     description: "Community knowledge-sharing in the heart of historic Boise-Humboldt.",
     location: [-122.6745, 45.5483],
   },
+  {
+    id: "evt-13",
+    title: "Portland Zine Symposium",
+    venue: "IPRC",
+    time: "11:00 AM",
+    category: "culture",
+    neighborhoodId: "hosford-abernethy",
+    description: "Where photocopied dreams meet staple guns. 200+ zine makers under one roof.",
+    location: [-122.6500, 45.5070],
+  },
+  {
+    id: "evt-14",
+    title: "First Thursday Art Walk",
+    venue: "Alberta Street Galleries",
+    time: "5:00 PM",
+    category: "culture",
+    neighborhoodId: "alberta",
+    description: "Free wine, questionable art, and the illusion that you understand conceptual sculpture.",
+    location: [-122.6430, 45.5590],
+  },
+  {
+    id: "evt-15",
+    title: "Powell's Staff Picks Reading",
+    venue: "Powell's City of Books",
+    time: "7:00 PM",
+    category: "culture",
+    neighborhoodId: "pearl",
+    description: "The bookstore so big it needs a map. Tonight: staff read their obsessions aloud.",
+    location: [-122.6810, 45.5230],
+  },
+
+  // === ENTERTAINMENT ===
   {
     id: "evt-4",
     title: "An Evening with Ira Glass",
@@ -52,6 +149,28 @@ export const SANE_EVENTS: readonly CityEvent[] = [
     location: [-122.6540, 45.5155],
   },
   {
+    id: "evt-16",
+    title: "Standup at Helium",
+    venue: "Helium Comedy Club",
+    time: "8:00 PM",
+    category: "entertainment",
+    neighborhoodId: "old-town",
+    description: "Comics from NYC roasting Portland. We laugh because it's true.",
+    location: [-122.6720, 45.5250],
+  },
+  {
+    id: "evt-17",
+    title: "Roller Derby: Rose City Rollers",
+    venue: "Oaks Park",
+    time: "6:00 PM",
+    category: "entertainment",
+    neighborhoodId: "sellwood-moreland",
+    description: "Full-contact skating in a park built in 1905. The bruises are artisanal.",
+    location: [-122.6610, 45.4720],
+  },
+
+  // === MUSIC ===
+  {
     id: "evt-6",
     title: "Larry and His Flask",
     venue: "Showdown Saloon",
@@ -60,5 +179,35 @@ export const SANE_EVENTS: readonly CityEvent[] = [
     neighborhoodId: "hosford-abernethy",
     description: "Folk-punk fury at a dive bar. Exactly as Portland as it sounds.",
     location: [-122.6500, 45.5055],
+  },
+  {
+    id: "evt-18",
+    title: "Jazz Brunch at Produce Row",
+    venue: "Produce Row Cafe",
+    time: "10:30 AM",
+    category: "music",
+    neighborhoodId: "buckman",
+    description: "Eggs benedict with a saxophone solo. Sunday done right.",
+    location: [-122.6600, 45.5140],
+  },
+  {
+    id: "evt-19",
+    title: "Mississippi Studios: Local Showcase",
+    venue: "Mississippi Studios",
+    time: "8:00 PM",
+    category: "music",
+    neighborhoodId: "mississippi",
+    description: "Five local bands, $10 cover. At least two will have a banjo.",
+    location: [-122.6750, 45.5530],
+  },
+  {
+    id: "evt-20",
+    title: "Karaoke at Voicebox",
+    venue: "Voicebox NW",
+    time: "9:00 PM",
+    category: "music",
+    neighborhoodId: "northwest",
+    description: "Private rooms, public shame. Portland sings its heart out, off-key.",
+    location: [-122.6960, 45.5340],
   },
 ] satisfies readonly CityEvent[]

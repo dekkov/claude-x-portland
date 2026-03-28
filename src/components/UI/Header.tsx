@@ -1,6 +1,10 @@
 import { ModeToggle } from "./ModeToggle"
+import { useBattle } from "../../context/BattleContext"
 
 export function Header() {
+  const { pendingBattle, activeBattle, triggerRandomBattle } = useBattle()
+  const battleBusy = !!(pendingBattle || activeBattle)
+
   return (
     <header
       style={{
@@ -18,6 +22,17 @@ export function Header() {
         padding: "0 20px",
       }}
     >
+      <div style={{ position: "absolute", left: 20, top: "50%", transform: "translateY(-50%)" }}>
+        <button
+          className={`battle-trigger ${!battleBusy ? "battle-trigger-pulse" : ""}`}
+          onClick={triggerRandomBattle}
+          disabled={battleBusy}
+          title="Start a neighborhood war"
+        >
+          {"\u2694\uFE0F"}
+        </button>
+      </div>
+
       <div style={{ textAlign: "center" }}>
         <h1
           style={{
