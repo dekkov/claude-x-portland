@@ -1,0 +1,48 @@
+:root {
+  /* Category colors — Sane */
+  --color-political: #FF3B5C;
+  --color-nature: #4ADE80;
+  --color-culture: #A78BFA;
+  --color-entertainment: #FB923C;
+  --color-music: #38BDF8;
+
+  /* Category colors — Unhinged */
+  --color-impervious: #94A3B8;
+  --color-crows: #8B5CF6;
+  --color-stink: #84CC16;
+
+  /* UI colors */
+  --bg-dark: #0f0a1a;
+  --header-from: #1a0533;
+  --header-to: #2d1b69;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.15);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* Mapbox overrides */
+.mapboxgl-ctrl-bottom-left,
+.mapboxgl-ctrl-bottom-right {
+  display: none !important;
+}

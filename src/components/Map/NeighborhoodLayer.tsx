@@ -1,0 +1,152 @@
+import { useEffect } from "react"
+import type mapboxgl from "mapbox-gl"
+import { useAppState } from "../../context/AppContext"
+import { SANE_EVENTS } from "../../data/events"
+import { STUPID_EVENTS } from "../../data/stupid-events"
+import { NEIGHBORHOOD_BY_ID } from "../../data/neighborhoods"
+import { CATEGORY_MAP } from "../../config/constants"
+
+const SOURCE_ID = "neighborhoods"
+const FILL_LAYER_ID = "neighborhood-fill"     // vivid ground color under buildings
+const GLOW_LAYER_ID = "neighborhood-glow"     // blurred border halo
+const BORDER_LAYER_ID = "neighborhood-border" // crisp border
+
+function getActiveNeighborhoods(
+  mode: "sane" | "unhinged",
+  activeCategories: ReadonlySet<string>
+): Map<string, { color: string; intensity: number }> {
+  const result = new Map<string, { color: string; intensity: number }>()
+
+  if (mode === "sane") {
+    for (const evt of SANE_EVENTS) {
+      if (!activeCategories.has(evt.category)) continue
+      const hood = NEIGHBORHOOD_BY_ID.get(evt.neighborhoodId)
+      if (!hood) continue
+      const cat = CATEGORY_MAP[evt.category]
+      if (!cat) continue
+      if (!result.has(hood.name)) {
+        result.set(hood.name, { color: cat.glowColor, intensity: 0.7 })
+      }
+    }
+  } else {
+    for (const evt of STUPID_EVENTS) {
+      if (!activeCategories.has(evt.category)) continue
+      const hood = NEIGHBORHOOD_BY_ID.get(evt.neighborhoodId)
+      if (!hood) continue
+      const cat = CATEGORY_MAP[evt.category]
+      if (!cat) continue
+      const existing = result.get(hood.name)
+      if (!existing || evt.metricValue > existing.intensity) {
+        result.set(hood.name, { color: cat.glowColor, intensity: evt.metricValue })
+      }
+    }
+  }
+
+  return result
+}
+
+export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
+  const { mode, activeCategories } = useAppState()
+
+  useEffect(() => {
+    if (map.getSource(SOURCE_ID)) return
+
+    map.addSource(SOURCE_ID, {
+      type: "geojson",
+      data: "/portland-neighborhoods.geojson",
+    })
+
+    // Vivid ground fill — slot "middle" = above roads, below 3D buildings
+    // Buildings rise from the colored ground creating a strong visual effect
+    map.addLayer({
+      id: FILL_LAYER_ID,
+      type: "fill",
+      source: SOURCE_ID,
+      slot: "middle",
+      paint: {
+        "fill-color": "rgba(0,0,0,0)",
+        "fill-opacity": 0.55,  // FIXED — strong enough to read as colored ground
+      },
+    } as mapboxgl.FillLayer & { slot: string })
+
+    // Wide blurred border glow
+    map.addLayer({
+      id: GLOW_LAYER_ID,
+      type: "line",
+      source: SOURCE_ID,
+      slot: "top",
+      paint: {
+        "line-color": "rgba(0,0,0,0)",
+        "line-width": 18,
+        "line-blur": 15,
+        "line-opacity": 0.9,
+      },
+    } as mapboxgl.LineLayer & { slot: string })
+
+    // Crisp border
+    map.addLayer({
+      id: BORDER_LAYER_ID,
+      type: "line",
+      source: SOURCE_ID,
+      slot: "top",
+      paint: {
+        "line-color": "rgba(255,255,255,0.15)",
+        "line-width": 1,
+      },
+    } as mapboxgl.LineLayer & { slot: string })
+
+    map.on("mousemove", FILL_LAYER_ID, () => {
+      map.getCanvas().style.cursor = "pointer"
+    })
+    map.on("mouseleave", FILL_LAYER_ID, () => {
+      map.getCanvas().style.cursor = ""
+    })
+
+    return () => {
+      ;[BORDER_LAYER_ID, GLOW_LAYER_ID, FILL_LAYER_ID].forEach((id) => {
+        if (map.getLayer(id)) map.removeLayer(id)
+      })
+      if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID)
+    }
+  }, [map])
+
+  useEffect(() => {
+    if (!map.getLayer(FILL_LAYER_ID)) return
+
+    const active = getActiveNeighborhoods(mode, activeCategories)
+
+    if (active.size === 0) {
+      map.setPaintProperty(FILL_LAYER_ID, "fill-color", "rgba(0,0,0,0)")
+      map.setPaintProperty(GLOW_LAYER_ID, "line-color", "rgba(0,0,0,0)")
+      map.setPaintProperty(BORDER_LAYER_ID, "line-color", "rgba(255,255,255,0.1)")
+      map.setPaintProperty(BORDER_LAYER_ID, "line-width", 0.5)
+      return
+    }
+
+    // fill-color and line-color ARE data-driven — match expressions work
+    const fillColor: unknown[] = ["match", ["get", "NAME"]]
+    const glowColor: unknown[] = ["match", ["get", "NAME"]]
+    const borderColor: unknown[] = ["match", ["get", "NAME"]]
+    const borderWidth: unknown[] = ["match", ["get", "NAME"]]
+
+    for (const [name, { color }] of active) {
+      fillColor.push(name, color)
+      glowColor.push(name, color)
+      borderColor.push(name, color)
+      borderWidth.push(name, 3)
+    }
+
+    // Inactive neighborhoods: transparent fill, subtle border
+    fillColor.push("rgba(0,0,0,0)")
+    glowColor.push("rgba(0,0,0,0)")
+    borderColor.push("rgba(255,255,255,0.1)")
+    borderWidth.push(0.5)
+
+    map.setPaintProperty(FILL_LAYER_ID, "fill-color", fillColor)
+    map.setPaintProperty(GLOW_LAYER_ID, "line-color", glowColor)
+    map.setPaintProperty(BORDER_LAYER_ID, "line-color", borderColor)
+    map.setPaintProperty(BORDER_LAYER_ID, "line-width", borderWidth)
+  }, [map, mode, activeCategories])
+
+  return null
+}

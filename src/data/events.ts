@@ -1,0 +1,58 @@
+import type { CityEvent } from "./types"
+
+export const SANE_EVENTS: readonly CityEvent[] = [
+  {
+    id: "evt-1",
+    title: '"No Kings" Rally',
+    venue: "Pioneer Courthouse Square",
+    time: "12:00 PM",
+    category: "political",
+    neighborhoodId: "downtown",
+    description: "Portland's weekly reminder that we didn't fight a revolution to bow to anyone.",
+  },
+  {
+    id: "evt-2",
+    title: "Forest Bathing Walk",
+    venue: "Oxbow Regional Park",
+    time: "9:00 AM",
+    category: "nature",
+    neighborhoodId: "east-portland",
+    description: "Commune with Douglas firs. No phones. Yes, you have to hug the trees.",
+  },
+  {
+    id: "evt-3",
+    title: "Open Hours at Black Cultural Library",
+    venue: "Black Cultural Library",
+    time: "2:00 PM",
+    category: "culture",
+    neighborhoodId: "boise",
+    description: "Community knowledge-sharing in the heart of historic Boise-Humboldt.",
+  },
+  {
+    id: "evt-4",
+    title: "An Evening with Ira Glass",
+    venue: "Schnitzer Concert Hall",
+    time: "7:30 PM",
+    category: "entertainment",
+    neighborhoodId: "downtown",
+    description: "The voice of public radio, live. Bring your tote bag.",
+  },
+  {
+    id: "evt-5",
+    title: "The Stag Drag Brunch",
+    venue: "Location TBD",
+    time: "11:00 AM",
+    category: "entertainment",
+    neighborhoodId: "buckman",
+    description: "Drag, brunch, and mimosas. Portland's holy trinity.",
+  },
+  {
+    id: "evt-6",
+    title: "Larry and His Flask",
+    venue: "Showdown Saloon",
+    time: "9:00 PM",
+    category: "music",
+    neighborhoodId: "hosford-abernethy",
+    description: "Folk-punk fury at a dive bar. Exactly as Portland as it sounds.",
+  },
+] satisfies readonly CityEvent[]
