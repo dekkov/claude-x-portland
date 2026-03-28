@@ -41,6 +41,7 @@
   letter-spacing: 0.5px;
   color: var(--text-primary);
   animation: ticker-scroll 50s linear infinite;
+  will-change: transform;
 }
 
 .ticker-loading {

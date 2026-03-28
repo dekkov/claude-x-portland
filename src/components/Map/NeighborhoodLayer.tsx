@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import type mapboxgl from "mapbox-gl"
 import { useAppState } from "../../context/AppContext"
 import { SANE_EVENTS } from "../../data/events"
@@ -7,11 +7,11 @@ import { NEIGHBORHOOD_BY_ID } from "../../data/neighborhoods"
 import { CATEGORY_MAP } from "../../config/constants"
 
 const SOURCE_ID = "neighborhoods"
-const FILL_LAYER_ID = "neighborhood-fill"     // vivid ground color under buildings
-const GLOW_LAYER_ID = "neighborhood-glow"     // blurred border halo
-const BORDER_LAYER_ID = "neighborhood-border" // crisp border
+const FILL_LAYER_ID = "neighborhood-fill"
+const GLOW_LAYER_ID = "neighborhood-glow"
+const BORDER_LAYER_ID = "neighborhood-border"
 
-const UNIFIED_FILL = "#E8DEFF" // soft lavender-white for all active neighborhoods
+const UNIFIED_FILL = "#E8DEFF"
 
 interface NeighborhoodVisual {
   readonly fillColor: string
@@ -67,6 +67,7 @@ function getActiveNeighborhoods(
 
 export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
   const { mode, activeCategories } = useAppState()
+  const hoveredRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (map.getSource(SOURCE_ID)) return
@@ -76,21 +77,19 @@ export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
       data: "/portland-neighborhoods.geojson",
     })
 
-    // 3D fill-extrusion — slot "middle" = above roads, below 3D buildings
+    // Flat fill — much cheaper than fill-extrusion
     map.addLayer({
       id: FILL_LAYER_ID,
-      type: "fill-extrusion",
+      type: "fill",
       source: SOURCE_ID,
       slot: "middle",
       paint: {
-        "fill-extrusion-color": "rgba(0,0,0,0)",
-        "fill-extrusion-height": 0,
-        "fill-extrusion-base": 0,
-        "fill-extrusion-opacity": 0,
+        "fill-color": "rgba(0,0,0,0)",
+        "fill-opacity": 0.35,
       },
-    } as unknown as mapboxgl.Layer & { slot: string })
+    } as mapboxgl.FillLayer & { slot: string })
 
-    // Wide blurred border glow
+    // Blurred border glow
     map.addLayer({
       id: GLOW_LAYER_ID,
       type: "line",
@@ -116,29 +115,12 @@ export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
       },
     } as mapboxgl.LineLayer & { slot: string })
 
-    let hoveredName: string | null = null
-
-    map.on("mousemove", FILL_LAYER_ID, (e) => {
+    // Lightweight hover — cursor only, no paint property thrashing
+    map.on("mousemove", FILL_LAYER_ID, () => {
       map.getCanvas().style.cursor = "pointer"
-      const name = e.features?.[0]?.properties?.NAME as string | undefined
-      if (name && name !== hoveredName) {
-        hoveredName = name
-        if (map.getLayer(GLOW_LAYER_ID)) {
-          map.setPaintProperty(GLOW_LAYER_ID, "line-width", [
-            "case",
-            ["==", ["get", "NAME"], name],
-            28,
-            18,
-          ])
-        }
-      }
     })
     map.on("mouseleave", FILL_LAYER_ID, () => {
       map.getCanvas().style.cursor = ""
-      hoveredName = null
-      if (map.getLayer(GLOW_LAYER_ID)) {
-        map.setPaintProperty(GLOW_LAYER_ID, "line-width", 18)
-      }
     })
 
     return () => {
@@ -155,9 +137,7 @@ export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
     const active = getActiveNeighborhoods(mode, activeCategories)
 
     if (active.size === 0) {
-      map.setPaintProperty(FILL_LAYER_ID, "fill-extrusion-color", "rgba(0,0,0,0)")
-      map.setPaintProperty(FILL_LAYER_ID, "fill-extrusion-height", 0)
-      map.setPaintProperty(FILL_LAYER_ID, "fill-extrusion-opacity", 0)
+      map.setPaintProperty(FILL_LAYER_ID, "fill-color", "rgba(0,0,0,0)")
       map.setPaintProperty(GLOW_LAYER_ID, "line-color", "rgba(0,0,0,0)")
       map.setPaintProperty(BORDER_LAYER_ID, "line-color", "rgba(12, 74, 110, 0.25)")
       map.setPaintProperty(BORDER_LAYER_ID, "line-width", 0.5)
@@ -168,29 +148,20 @@ export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
     const glowColor: unknown[] = ["match", ["get", "NAME"]]
     const borderColor: unknown[] = ["match", ["get", "NAME"]]
     const borderWidth: unknown[] = ["match", ["get", "NAME"]]
-    const fillHeight: unknown[] = ["match", ["get", "NAME"]]
-    const fillOpacity: unknown[] = ["match", ["get", "NAME"]]
 
     for (const [name, visual] of active) {
       fillColor.push(name, visual.fillColor)
       glowColor.push(name, visual.glowColor)
       borderColor.push(name, visual.borderColor)
       borderWidth.push(name, 3)
-      fillHeight.push(name, mode === "unhinged" ? visual.intensity * 80 : 30)
-      fillOpacity.push(name, mode === "unhinged" ? 0.4 + visual.intensity * 0.4 : 0.55)
     }
 
-    // Inactive neighborhoods: transparent fill, subtle border, no height
     fillColor.push("rgba(0,0,0,0)")
     glowColor.push("rgba(0,0,0,0)")
     borderColor.push("rgba(12, 74, 110, 0.25)")
     borderWidth.push(0.5)
-    fillHeight.push(0)
-    fillOpacity.push(0)
 
-    map.setPaintProperty(FILL_LAYER_ID, "fill-extrusion-color", fillColor)
-    map.setPaintProperty(FILL_LAYER_ID, "fill-extrusion-height", fillHeight)
-    map.setPaintProperty(FILL_LAYER_ID, "fill-extrusion-opacity", fillOpacity)
+    map.setPaintProperty(FILL_LAYER_ID, "fill-color", fillColor)
     map.setPaintProperty(GLOW_LAYER_ID, "line-color", glowColor)
     map.setPaintProperty(BORDER_LAYER_ID, "line-color", borderColor)
     map.setPaintProperty(BORDER_LAYER_ID, "line-width", borderWidth)

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useCallback } from "react"
 import mapboxgl from "mapbox-gl"
 import { useAppState } from "../../context/AppContext"
 import { SANE_EVENTS } from "../../data/events"
@@ -82,9 +82,9 @@ function getActiveBubbles(
   return Array.from(bubbleMap.values())
 }
 
-function createBubbleHTML(bubble: BubbleData, delay: number): string {
+function createBubbleHTML(bubble: BubbleData): string {
   return `
-    <div class="bubble-marker" style="animation-delay: ${delay}s; color: ${bubble.color}">
+    <div class="bubble-marker" style="color: ${bubble.color}">
       <div class="bubble-inner">
         <span class="bubble-emoji">${bubble.emoji}</span>
         <span class="bubble-badge">${bubble.badge}</span>
@@ -130,18 +130,19 @@ function createExpandedHTML(bubble: BubbleData, mode: "sane" | "unhinged"): stri
 }
 
 export function BubbleManager({ map }: { map: mapboxgl.Map }) {
-  const { mode, activeCategories, selectedNeighborhood, setSelectedNeighborhood } = useAppState()
+  const { mode, activeCategories, setSelectedNeighborhood } = useAppState()
   const markersRef = useRef<Map<string, mapboxgl.Marker>>(new Map())
   const expandedRef = useRef<HTMLDivElement | null>(null)
+  const modeRef = useRef(mode)
+  modeRef.current = mode
 
-  // Clean up expanded card
-  const closeExpanded = () => {
+  const closeExpanded = useCallback(() => {
     if (expandedRef.current) {
       expandedRef.current.remove()
       expandedRef.current = null
     }
     setSelectedNeighborhood(null)
-  }
+  }, [setSelectedNeighborhood])
 
   // Close on Escape
   useEffect(() => {
@@ -150,44 +151,47 @@ export function BubbleManager({ map }: { map: mapboxgl.Map }) {
     }
     document.addEventListener("keydown", handler)
     return () => document.removeEventListener("keydown", handler)
-  }, [])
+  }, [closeExpanded])
 
   // Close on map click
   useEffect(() => {
     const handler = () => closeExpanded()
     map.on("click", handler)
     return () => { map.off("click", handler) }
-  }, [map])
+  }, [map, closeExpanded])
 
-  // Sync markers with state
+  // Sync markers with state — diff-based: only add/remove what changed
   useEffect(() => {
-    const bubbles = getActiveBubbles(mode, activeCategories)
-    const currentIds = new Set(bubbles.map((b) => b.neighborhood.id))
+    closeExpanded()
 
-    // Remove old markers
+    const bubbles = getActiveBubbles(mode, activeCategories)
+    const nextIds = new Set(bubbles.map((b) => b.neighborhood.id))
+
+    // Remove markers no longer active
     for (const [id, marker] of markersRef.current) {
-      if (!currentIds.has(id)) {
+      if (!nextIds.has(id)) {
         marker.remove()
         markersRef.current.delete(id)
       }
     }
 
-    // Add/update markers
-    bubbles.forEach((bubble, i) => {
+    // Add only new markers (skip IDs that already exist)
+    for (const bubble of bubbles) {
       const id = bubble.neighborhood.id
-      const existing = markersRef.current.get(id)
-      if (existing) {
-        existing.remove()
-        markersRef.current.delete(id)
+      if (markersRef.current.has(id)) {
+        // Update badge text in-place instead of recreating
+        const existing = markersRef.current.get(id)!
+        const badgeEl = existing.getElement().querySelector(".bubble-badge")
+        if (badgeEl) badgeEl.textContent = bubble.badge
+        continue
       }
 
       const el = document.createElement("div")
-      el.innerHTML = createBubbleHTML(bubble, i * 0.3)
+      el.innerHTML = createBubbleHTML(bubble)
       el.addEventListener("click", (e) => {
         e.stopPropagation()
         closeExpanded()
 
-        // Fly to neighborhood — close enough to see buildings
         map.flyTo({
           center: bubble.neighborhood.centroid,
           zoom: 16,
@@ -196,18 +200,16 @@ export function BubbleManager({ map }: { map: mapboxgl.Map }) {
           duration: 1500,
         })
 
-        // Show expanded card
         const expanded = document.createElement("div")
-        expanded.innerHTML = createExpandedHTML(bubble, mode)
-        expanded.addEventListener("click", (e) => {
-          const target = e.target as HTMLElement
+        expanded.innerHTML = createExpandedHTML(bubble, modeRef.current)
+        expanded.addEventListener("click", (ev) => {
+          const target = ev.target as HTMLElement
           if (target.dataset.close) {
             closeExpanded()
           }
-          // Click on event name → fly to exact venue location
           if (target.dataset.lng && target.dataset.lat) {
-            e.preventDefault()
-            e.stopPropagation()
+            ev.preventDefault()
+            ev.stopPropagation()
             map.flyTo({
               center: [parseFloat(target.dataset.lng), parseFloat(target.dataset.lat)],
               zoom: 17.5,
@@ -228,18 +230,8 @@ export function BubbleManager({ map }: { map: mapboxgl.Map }) {
         .addTo(map)
 
       markersRef.current.set(id, marker)
-    })
-
-    // Cleanup
-    return () => {
-      // Don't remove on cleanup — we manage lifecycle above
     }
-  }, [mode, activeCategories, map])
-
-  // Close expanded when mode/categories change
-  useEffect(() => {
-    closeExpanded()
-  }, [mode, activeCategories])
+  }, [mode, activeCategories, map, closeExpanded, setSelectedNeighborhood])
 
   return null
 }
