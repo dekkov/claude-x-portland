@@ -90,7 +90,7 @@ export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
       source: SOURCE_ID,
       slot: "top",
       paint: {
-        "line-color": "rgba(255,255,255,0.15)",
+        "line-color": "rgba(12, 74, 110, 0.3)",
         "line-width": 1,
       },
     } as mapboxgl.LineLayer & { slot: string })
@@ -118,7 +118,7 @@ export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
     if (active.size === 0) {
       map.setPaintProperty(FILL_LAYER_ID, "fill-color", "rgba(0,0,0,0)")
       map.setPaintProperty(GLOW_LAYER_ID, "line-color", "rgba(0,0,0,0)")
-      map.setPaintProperty(BORDER_LAYER_ID, "line-color", "rgba(255,255,255,0.1)")
+      map.setPaintProperty(BORDER_LAYER_ID, "line-color", "rgba(12, 74, 110, 0.25)")
       map.setPaintProperty(BORDER_LAYER_ID, "line-width", 0.5)
       return
     }
@@ -139,7 +139,7 @@ export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
     // Inactive neighborhoods: transparent fill, subtle border
     fillColor.push("rgba(0,0,0,0)")
     glowColor.push("rgba(0,0,0,0)")
-    borderColor.push("rgba(255,255,255,0.1)")
+    borderColor.push("rgba(12, 74, 110, 0.25)")
     borderWidth.push(0.5)
 
     map.setPaintProperty(FILL_LAYER_ID, "fill-color", fillColor)

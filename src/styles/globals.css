@@ -11,14 +11,14 @@
   --color-crows: #8B5CF6;
   --color-stink: #84CC16;
 
-  /* UI colors */
-  --bg-dark: #0f0a1a;
-  --header-from: #1a0533;
-  --header-to: #2d1b69;
+  /* UI colors — sunny day */
+  --bg-dark: #0f172a;
+  --header-from: #0c4a6e;
+  --header-to: #0284c7;
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.7);
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(56, 189, 248, 0.25);
 }
 
 * {
