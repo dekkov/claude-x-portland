@@ -24,8 +24,8 @@ export function useMapbox(containerRef: React.RefObject<HTMLDivElement | null>) 
     map.on("style.load", () => {
       // Bright, colorful base with visible 3D buildings
       try {
-        map.setConfigProperty("basemap", "theme", "default")
-        map.setConfigProperty("basemap", "lightPreset", "dawn")
+        map.setConfigProperty("basemap", "theme", "monochrome")
+        map.setConfigProperty("basemap", "lightPreset", "dusk")
         map.setConfigProperty("basemap", "showPointOfInterestLabels", false)
       } catch {
         // Fallback: standard style without config properties

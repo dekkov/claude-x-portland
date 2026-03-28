@@ -5,6 +5,11 @@ export function CityTicker() {
 
   return (
     <div className="city-ticker">
+      <div className="ticker-watcher">
+        <div className="watcher-bubble">
+          <span className="watcher-eye">👁️</span>
+        </div>
+      </div>
       <span className="ticker-label">Portland is thinking...</span>
       <div className="ticker-track">
         {isLoading ? (

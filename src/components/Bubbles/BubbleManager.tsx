@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import mapboxgl from "mapbox-gl"
 import { useAppState } from "../../context/AppContext"
 import { SANE_EVENTS } from "../../data/events"
 import { STUPID_EVENTS } from "../../data/stupid-events"
-import { NEIGHBORHOODS, NEIGHBORHOOD_BY_ID } from "../../data/neighborhoods"
+import { NEIGHBORHOOD_BY_ID } from "../../data/neighborhoods"
 import { CATEGORY_MAP } from "../../config/constants"
 import type { CityEvent, StupidEvent, Neighborhood } from "../../data/types"
 
@@ -14,6 +14,10 @@ interface BubbleData {
   readonly badge: string
   readonly events: readonly CityEvent[]
   readonly stupidEvents: readonly StupidEvent[]
+}
+
+function titleCase(s: string): string {
+  return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
 function getActiveBubbles(
@@ -90,12 +94,14 @@ function createBubbleHTML(bubble: BubbleData, delay: number): string {
 }
 
 function createExpandedHTML(bubble: BubbleData, mode: "sane" | "unhinged"): string {
+  const hoodName = titleCase(bubble.neighborhood.name)
+
   if (mode === "sane") {
     const eventList = bubble.events
       .map(
         (e) => `
         <div class="event-item">
-          <div><strong>${e.title}</strong></div>
+          <div><strong><a href="#" class="event-link" data-lng="${e.location[0]}" data-lat="${e.location[1]}" style="color: inherit; text-decoration: underline; text-decoration-style: dotted; cursor: pointer;">${e.title}</a></strong></div>
           <div class="event-time">${e.time}</div>
           <div class="event-venue">${e.venue}</div>
         </div>`
@@ -104,7 +110,7 @@ function createExpandedHTML(bubble: BubbleData, mode: "sane" | "unhinged"): stri
     return `
       <div class="bubble-expanded">
         <button class="close-btn" data-close="true">&times;</button>
-        <h3>${bubble.emoji} ${bubble.neighborhood.name}</h3>
+        <h3>${bubble.emoji} ${hoodName}</h3>
         ${eventList}
       </div>
     `
@@ -115,7 +121,7 @@ function createExpandedHTML(bubble: BubbleData, mode: "sane" | "unhinged"): stri
   return `
     <div class="bubble-expanded">
       <button class="close-btn" data-close="true">&times;</button>
-      <h3>${bubble.emoji} ${bubble.neighborhood.name}</h3>
+      <h3>${bubble.emoji} ${hoodName}</h3>
       <div class="metric-big" style="color: ${bubble.color}">${evt.metric}</div>
       <div class="description">${evt.description}</div>
       ${evt.category === "stink" ? '<div style="margin-top:8px;font-size:11px;color:var(--text-secondary)">Smell-O-Vision Rating: 3/5 dumpsters</div>' : ""}
@@ -181,10 +187,10 @@ export function BubbleManager({ map }: { map: mapboxgl.Map }) {
         e.stopPropagation()
         closeExpanded()
 
-        // Fly to neighborhood
+        // Fly to neighborhood — close enough to see buildings
         map.flyTo({
           center: bubble.neighborhood.centroid,
-          zoom: 14,
+          zoom: 16,
           pitch: 65,
           bearing: -20 + Math.random() * 40,
           duration: 1500,
@@ -197,6 +203,18 @@ export function BubbleManager({ map }: { map: mapboxgl.Map }) {
           const target = e.target as HTMLElement
           if (target.dataset.close) {
             closeExpanded()
+          }
+          // Click on event name → fly to exact venue location
+          if (target.dataset.lng && target.dataset.lat) {
+            e.preventDefault()
+            e.stopPropagation()
+            map.flyTo({
+              center: [parseFloat(target.dataset.lng), parseFloat(target.dataset.lat)],
+              zoom: 17.5,
+              pitch: 70,
+              bearing: Math.random() * 30 - 15,
+              duration: 1200,
+            })
           }
         })
         el.appendChild(expanded)

@@ -9,6 +9,7 @@ export const SANE_EVENTS: readonly CityEvent[] = [
     category: "political",
     neighborhoodId: "downtown",
     description: "Portland's weekly reminder that we didn't fight a revolution to bow to anyone.",
+    location: [-122.6784, 45.5187],
   },
   {
     id: "evt-2",
@@ -18,6 +19,7 @@ export const SANE_EVENTS: readonly CityEvent[] = [
     category: "nature",
     neighborhoodId: "east-portland",
     description: "Commune with Douglas firs. No phones. Yes, you have to hug the trees.",
+    location: [-122.5060, 45.4920],
   },
   {
     id: "evt-3",
@@ -27,6 +29,7 @@ export const SANE_EVENTS: readonly CityEvent[] = [
     category: "culture",
     neighborhoodId: "boise",
     description: "Community knowledge-sharing in the heart of historic Boise-Humboldt.",
+    location: [-122.6745, 45.5483],
   },
   {
     id: "evt-4",
@@ -36,6 +39,7 @@ export const SANE_EVENTS: readonly CityEvent[] = [
     category: "entertainment",
     neighborhoodId: "downtown",
     description: "The voice of public radio, live. Bring your tote bag.",
+    location: [-122.6836, 45.5166],
   },
   {
     id: "evt-5",
@@ -45,6 +49,7 @@ export const SANE_EVENTS: readonly CityEvent[] = [
     category: "entertainment",
     neighborhoodId: "buckman",
     description: "Drag, brunch, and mimosas. Portland's holy trinity.",
+    location: [-122.6540, 45.5155],
   },
   {
     id: "evt-6",
@@ -54,5 +59,6 @@ export const SANE_EVENTS: readonly CityEvent[] = [
     category: "music",
     neighborhoodId: "hosford-abernethy",
     description: "Folk-punk fury at a dive bar. Exactly as Portland as it sounds.",
+    location: [-122.6500, 45.5055],
   },
 ] satisfies readonly CityEvent[]

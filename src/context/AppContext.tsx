@@ -22,14 +22,14 @@ function getAllCategoryIds(mode: AppMode): Set<string> {
 export function AppProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<AppMode>("unhinged")
   const [activeCategories, setActiveCategories] = useState<Set<string>>(
-    () => getAllCategoryIds("unhinged")
+    () => new Set()
   )
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string | null>(null)
 
   const toggleMode = useCallback(() => {
     setMode((prev) => {
       const next = prev === "sane" ? "unhinged" : "sane"
-      setActiveCategories(getAllCategoryIds(next))
+      setActiveCategories(new Set())
       setSelectedNeighborhood(null)
       return next
     })
@@ -37,13 +37,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const toggleCategory = useCallback((id: string) => {
     setActiveCategories((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
+      if (prev.has(id)) {
+        return new Set()
       }
-      return next
+      return new Set([id])
     })
   }, [])
 

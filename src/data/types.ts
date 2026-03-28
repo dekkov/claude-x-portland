@@ -11,6 +11,7 @@ export interface CityEvent {
   readonly category: EventCategory
   readonly neighborhoodId: string
   readonly description: string
+  readonly location: readonly [number, number] // [lng, lat]
 }
 
 // Unhinged mode
@@ -43,3 +44,5 @@ export interface CategoryDef {
   readonly glowColor: string
   readonly emoji: string
 }
+
+export type TimeRange = readonly [number, number] // [startHour, endHour] 0-24
