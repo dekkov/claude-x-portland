@@ -14,7 +14,7 @@ export function CategoryFilter() {
         gap: 8,
         zIndex: 100,
         padding: "8px 12px",
-        background: "rgba(15, 10, 26, 0.7)",
+        background: "rgba(15, 23, 42, 0.75)",
         backdropFilter: "blur(12px)",
         borderRadius: 24,
         border: "1px solid rgba(255, 255, 255, 0.1)",
