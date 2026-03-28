@@ -1,21 +1,18 @@
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.03); }
 }
 
 .bubble-marker {
   animation: float 3s ease-in-out infinite;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  will-change: transform;
+  contain: layout style;
 }
 
 .bubble-marker:hover {
   transform: scale(1.1);
+  animation-play-state: paused;
 }
 
 .bubble-inner {
@@ -32,8 +29,6 @@
     0 4px 15px rgba(0, 0, 0, 0.3),
     0 0 20px currentColor;
   position: relative;
-  backdrop-filter: blur(8px);
-  animation: pulse 2s ease-in-out infinite;
 }
 
 .bubble-inner::after {
@@ -75,8 +70,7 @@
   left: 50%;
   transform: translateX(-50%);
   width: 280px;
-  background: rgba(15, 23, 42, 0.92);
-  backdrop-filter: blur(20px);
+  background: rgba(15, 23, 42, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 16px;
   padding: 16px;
