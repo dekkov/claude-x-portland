@@ -7,7 +7,7 @@ export function useMonologue() {
   const { mode, activeCategories } = useAppState()
   const [text, setText] = useState<string>(FALLBACK_MONOLOGUES.unhinged)
   const [isLoading, setIsLoading] = useState(true)
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   useEffect(() => {
     setIsLoading(true)
