@@ -108,17 +108,32 @@ export function BattleTroopAnimator({
       markersRef.current.push(markerA, markerB)
     }
 
-    // Initial fly-in: zoom close to Army A's starting position
+    // Calculate camera to fit the entire route so troops are visible
     const startCoord = route.coordinates[0] as [number, number]
     const endCoord = route.coordinates[route.coordinates.length - 1] as [number, number]
     const midLng = (startCoord[0] + endCoord[0]) / 2
     const midLat = (startCoord[1] + endCoord[1]) / 2
+    const routeBearing = Math.atan2(endCoord[0] - startCoord[0], endCoord[1] - startCoord[1]) * (180 / Math.PI)
+
+    // Compute bounds from route coordinates to determine zoom that shows both armies
+    const bounds = new mapboxgl.LngLatBounds(startCoord, endCoord)
+    for (const coord of route.coordinates) {
+      bounds.extend(coord as [number, number])
+    }
+
+    const fittedCamera = map.cameraForBounds(bounds, {
+      padding: 100,
+      pitch: 55,
+      bearing: routeBearing,
+    })
+    const startZoom = fittedCamera?.zoom != null ? Math.min(fittedCamera.zoom, 15) : 13
+    const endZoom = startZoom + 2
 
     map.flyTo({
       center: [midLng, midLat],
-      zoom: 14.5,
-      pitch: 65,
-      bearing: Math.atan2(endCoord[0] - startCoord[0], endCoord[1] - startCoord[1]) * (180 / Math.PI),
+      zoom: startZoom,
+      pitch: 55,
+      bearing: routeBearing,
       duration: 2000,
     })
 
@@ -167,12 +182,13 @@ export function BattleTroopAnimator({
         lastCameraUpdate = now
         const camLng = (leaderACoord[0] + leaderBCoord[0]) / 2
         const camLat = (leaderACoord[1] + leaderBCoord[1]) / 2
-        // Zoom in closer as armies converge
-        const zoomLevel = 14.5 + progress * 1.5
+        // Zoom in as armies converge, pitch increases for dramatic close-up
+        const zoomLevel = startZoom + progress * (endZoom - startZoom)
+        const pitchLevel = 55 + progress * 10
         map.easeTo({
           center: [camLng, camLat],
           zoom: zoomLevel,
-          pitch: 65,
+          pitch: pitchLevel,
           duration: 300,
         })
       }
