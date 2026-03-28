@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import type mapboxgl from "mapbox-gl"
+import type { Map as MapboxMap } from "mapbox-gl"
 import { useBattle } from "../../context/BattleContext"
 import { useBattleTimer } from "../../hooks/useBattleTimer"
 import { fetchBattleRoute } from "../../hooks/useBattleRoute"
@@ -14,7 +14,7 @@ function titleCase(s: string): string {
   return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
-export function BattleManager({ map }: { map: mapboxgl.Map }) {
+export function BattleManager({ map }: { map: MapboxMap }) {
   const battle = useBattle()
   const battleRef = useRef(battle)
   battleRef.current = battle

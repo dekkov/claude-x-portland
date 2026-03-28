@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react"
-import type mapboxgl from "mapbox-gl"
+import { useEffect } from "react"
+import type { Map as MapboxMap, FillLayer, LineLayer, ExpressionSpecification } from "mapbox-gl"
 import { useAppState } from "../../context/AppContext"
 import { SANE_EVENTS } from "../../data/events"
 import { STUPID_EVENTS } from "../../data/stupid-events"
@@ -65,9 +65,8 @@ function getActiveNeighborhoods(
   return result
 }
 
-export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
+export function NeighborhoodLayer({ map }: { map: MapboxMap }) {
   const { mode, activeCategories } = useAppState()
-  const hoveredRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (map.getSource(SOURCE_ID)) return
@@ -87,7 +86,7 @@ export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
         "fill-color": "rgba(0,0,0,0)",
         "fill-opacity": 0.35,
       },
-    } as mapboxgl.FillLayer & { slot: string })
+    } as FillLayer & { slot: string })
 
     // Blurred border glow
     map.addLayer({
@@ -101,7 +100,7 @@ export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
         "line-blur": 15,
         "line-opacity": 0.9,
       },
-    } as mapboxgl.LineLayer & { slot: string })
+    } as LineLayer & { slot: string })
 
     // Crisp border
     map.addLayer({
@@ -113,7 +112,7 @@ export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
         "line-color": "rgba(12, 74, 110, 0.3)",
         "line-width": 1,
       },
-    } as mapboxgl.LineLayer & { slot: string })
+    } as LineLayer & { slot: string })
 
     // Lightweight hover — cursor only, no paint property thrashing
     map.on("mousemove", FILL_LAYER_ID, () => {
@@ -148,6 +147,7 @@ export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
     const glowColor: unknown[] = ["match", ["get", "NAME"]]
     const borderColor: unknown[] = ["match", ["get", "NAME"]]
     const borderWidth: unknown[] = ["match", ["get", "NAME"]]
+    type Expr = ExpressionSpecification
 
     for (const [name, visual] of active) {
       fillColor.push(name, visual.fillColor)
@@ -161,10 +161,10 @@ export function NeighborhoodLayer({ map }: { map: mapboxgl.Map }) {
     borderColor.push("rgba(12, 74, 110, 0.25)")
     borderWidth.push(0.5)
 
-    map.setPaintProperty(FILL_LAYER_ID, "fill-color", fillColor)
-    map.setPaintProperty(GLOW_LAYER_ID, "line-color", glowColor)
-    map.setPaintProperty(BORDER_LAYER_ID, "line-color", borderColor)
-    map.setPaintProperty(BORDER_LAYER_ID, "line-width", borderWidth)
+    map.setPaintProperty(FILL_LAYER_ID, "fill-color", fillColor as Expr)
+    map.setPaintProperty(GLOW_LAYER_ID, "line-color", glowColor as Expr)
+    map.setPaintProperty(BORDER_LAYER_ID, "line-color", borderColor as Expr)
+    map.setPaintProperty(BORDER_LAYER_ID, "line-width", borderWidth as Expr)
   }, [map, mode, activeCategories])
 
   return null
