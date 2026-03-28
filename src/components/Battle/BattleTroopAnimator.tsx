@@ -35,8 +35,6 @@ function createTroopEl(emoji: string, index: number, side: "a" | "b"): HTMLDivEl
     border: 2px solid ${borderColor};
     box-shadow: 0 2px 8px rgba(0,0,0,0.5), 0 0 14px ${glowColor};
     pointer-events: none;
-    animation: troopBounce 0.5s ease-in-out infinite;
-    animation-delay: ${index * 0.15}s;
   `
   el.textContent = emoji
   return el
