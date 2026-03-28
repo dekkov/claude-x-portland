@@ -18,7 +18,7 @@ function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 }
 
-function createTroopEl(emoji: string, index: number, side: "a" | "b"): HTMLDivElement {
+function createTroopEl(emoji: string, side: "a" | "b"): HTMLDivElement {
   const el = document.createElement("div")
   const borderColor = side === "a" ? "rgba(68, 138, 255, 0.8)" : "rgba(255, 68, 68, 0.8)"
   const glowColor = side === "a" ? "rgba(68, 138, 255, 0.4)" : "rgba(255, 68, 68, 0.4)"
@@ -88,8 +88,8 @@ export function BattleTroopAnimator({
     const troopsB: mapboxgl.Marker[] = []
 
     for (let i = 0; i < BATTLE_CONFIG.TROOPS_PER_ARMY; i++) {
-      const elA = createTroopEl(armyEmojiA, i, "a")
-      const elB = createTroopEl(armyEmojiB, i, "b")
+      const elA = createTroopEl(armyEmojiA, "a")
+      const elB = createTroopEl(armyEmojiB, "b")
 
       const startA = along(routeFeature, 0, { units: "kilometers" })
       const startB = along(routeFeature, totalLength, { units: "kilometers" })
