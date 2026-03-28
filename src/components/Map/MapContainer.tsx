@@ -3,6 +3,7 @@ import "mapbox-gl/dist/mapbox-gl.css"
 import { useMapbox } from "./hooks/useMapbox"
 import { NeighborhoodLayer } from "./NeighborhoodLayer"
 import { BubbleManager } from "../Bubbles/BubbleManager"
+import { NeighborhoodFilter } from "../UI/NeighborhoodFilter"
 
 export function MapContainer() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -14,6 +15,7 @@ export function MapContainer() {
         <>
           <NeighborhoodLayer map={map} />
           <BubbleManager map={map} />
+          <NeighborhoodFilter map={map} />
         </>
       )}
     </div>
